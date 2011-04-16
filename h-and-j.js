@@ -1,4 +1,6 @@
-// Based on http://github.com/aristus/sweet-justice
+// Needs jQuery 1.5.x
+
+// &shy;-stripping on copy based on http://github.com/aristus/sweet-justice
 function copy_protect(e) {
 	"use strict";
 
