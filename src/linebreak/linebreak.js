@@ -277,12 +277,13 @@ Object.extend(linebreak, {
 			value: value
 		};
 	},
-	penalty: function (width, penalty, flagged) {
+	penalty: function (width, penalty, flagged, value) {
 		return {
 			type: 'penalty',
 			width: width,
 			penalty: penalty,
-			flagged: flagged
+			flagged: flagged,
+			value: value
 		};
 	},
 	element: function (value, template) {

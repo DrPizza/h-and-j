@@ -327,12 +327,30 @@ function hyphenate_and_justify(options) {
 									}
 
 									if(hyphenated.length > 1) {
+										var getHyphenType = function(word) {
+											if(word.match(/_|\/|\||\\|--/)) { // loosely speaking, "does this look like a URL or a programming language identifier"
+												return '\u200b';
+											} else {
+												return '\u00ad';
+											}
+										}
+
+										var getHyphenWidth = function(hy) {
+											switch(hy) {
+											case '\u00ad': return measure('\u2010'); // for soft hyphen, measure hyphen
+											case '\u200b': return 0;                 // for zero width space, measure zero
+											}
+										}
+
+										var hyphen = getHyphenType(word);
+										var hyphenWidth = getHyphenWidth(hyphen);
+
 										hyphenated.forEach(function (part, partIndex, partArray) {
 											result.push(linebreak.box(measure(part), part));
 											structuredResult.push(result[result.length - 1]);
 
 											if(partIndex !== partArray.length - 1 && !part.match(/.*-/)) {
-												result.push(linebreak.penalty(measure('-'), hyphenPenalty, 1));
+												result.push(linebreak.penalty(hyphenWidth, hyphenPenalty, 1, hyphen));
 												structuredResult.push(result[result.length - 1]);
 											}
 										}, this);
@@ -624,7 +642,6 @@ function hyphenate_and_justify(options) {
 				case 'box':
 					if(carryOver !== null) {
 						currentWriteDestination.appendChild(carryOver);
-						currentWriteDestination.appendChild(document.createTextNode('\u00ad'));
 						carryOver = null;
 					}
 					currentWriteDestination.appendChild(document.createTextNode(n.value));
@@ -652,9 +669,11 @@ function hyphenate_and_justify(options) {
 							if($.browser.webkit || $.browser.opera) {
 								// WebKit and Opera shit the bed because they can't break <span>hy&shy;</span><span>phen</span>, so we hold
 								// this over and put it on the "next line", so the hyphen goes all in one span.
-								carryOver = currentWriteDestination.removeChild(currentWriteDestination.lastChild);
+								carryOver = document.createDocumentFragment();
+								carryOver.appendChild(currentWriteDestination.removeChild(currentWriteDestination.lastChild));
+								carryOver.appendChild(document.createTextNode(n.value));
 							} else {
-								currentWriteDestination.appendChild(document.createTextNode('\u00ad'));
+								currentWriteDestination.appendChild(document.createTextNode(n.value));
 							}
 							break;
 						case 0:
