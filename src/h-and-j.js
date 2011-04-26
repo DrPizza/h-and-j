@@ -338,7 +338,7 @@ function hyphenate_and_justify(options) {
 										var getHyphenWidth = function(hy) {
 											switch(hy) {
 											case '\u00ad': return measure('\u2010'); // for soft hyphen, measure hyphen
-											case '\u200b': return 0;                 // for zero width space, measure zero
+											case '\u200b': return measure('\u200b'); // for zero width space, measure zero
 											}
 										}
 
@@ -680,7 +680,7 @@ function hyphenate_and_justify(options) {
 							currentWriteDestination.appendChild(document.createTextNode(' '));
 							break;
 						default:
-							if(currentWriteDestination.lastChild !== null && (currentWriteDestination.lastChild.nodeValue === ' ' || currentWriteDestination.lastChild.nodeValue === '\u00a0')) {
+							if(currentWriteDestination.lastChild !== null && (currentWriteDestination.lastChild.nodeValue === ' ' || currentWriteDestination.lastChild.nodeValue === '\u00a0' || currentWriteDestination.lastChild.nodeValue === '\u200b')) {
 								currentWriteDestination.removeChild(currentWriteDestination.lastChild);
 							}
 							break;
