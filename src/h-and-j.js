@@ -77,6 +77,7 @@ function hyphenate_and_justify(options) {
 	var limitCache = Object.isDefined(options.limitCache) ? options.limitCache : false;
 	var hyphenate = Object.isDefined(options.hyphenate) ? options.hyphenate : true;
 	var protectCopying = Object.isDefined(options.protectCopying) ? options.protectCopying : true;
+	var selection = Object.isDefined(options.selection) ? options.selection : $(options.pattern);
 
 	var defaultLanguage = options.defaultLanguage || 'en';
 	var overrideLanguage = options.overrideLanguage;
@@ -109,10 +110,13 @@ function hyphenate_and_justify(options) {
 		}
 	}
 
+	if(protectCopying) {
+		selection.bind('copy', copy_protect);
+	}
+
 	if(!supported) {
 		console.log("not supported in this browser--falling back to browser justification");
-		$(options.pattern).bind('copy', copy_protect);
-		$(options.pattern).each(function(index, element) {
+		selection.each(function(index, element) {
 			browserJustify(element);
 		});
 		return;
@@ -137,10 +141,7 @@ function hyphenate_and_justify(options) {
 	};
 	var cacheHits = 0, cacheMisses = 0;
 
-	if(protectCopying) {
-		$(options.pattern).bind('copy', copy_protect);
-	}
-	$(options.pattern).not('#ruler').each(function(index, element) {
+	selection.not('#ruler').each(function(index, element) {
 		var ruler = element.cloneNode(false);
 		ruler.id = 'ruler';
 		$(ruler).css({
